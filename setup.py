@@ -4,7 +4,7 @@ setup(
     name='rtmui',
     version='0.1.0',
     description='Python thread manager via Rich enabled terminal',
-    url='https://github.com/shuds13/pyexample',
+    url='https://github.com/hosler/rich-thread-manager',
     author='Daniel Hosler',
     author_email='danhosler@gmail.com',
     license='MIT',
