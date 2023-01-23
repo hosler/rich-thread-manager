@@ -1,4 +1,4 @@
-from rich.console import Console, Group
+from rich.console import Console
 from rich.panel import Panel
 from rich.layout import Layout
 from rich.live import Live
@@ -10,7 +10,7 @@ from sshkeyboard import listen_keyboard
 import time, logging, queue, threading
 from queue import Empty
 
-from rtm.loghandlers import PopBufferingHandler
+from rtmui.loghandlers import PopBufferingHandler
 
 class ThreadManager(threading.Thread):
     def press(self, key):
@@ -41,7 +41,7 @@ class ThreadManager(threading.Thread):
 
 class Manager:
     def get_log(self, max_height=200) -> Table:
-        self.buffering_handler.capacity = max_height
+        self.buffering_handler.capacity = max_height - 1
         table = Table(show_header=False, pad_edge=False, show_edge=False)
         for row in self.buffering_handler.buffer:
             table.add_row(f'{row.msg}')
@@ -50,8 +50,8 @@ class Manager:
     def generate_layout(self) -> Layout:
         layout = Layout()
         layout.split_column(
-            Layout(name="top", ratio=7),
-            Layout(name="bottom")
+            Layout(name="top", ratio=9),
+            Layout(name="bottom", minimum_size=3)
         )
         layout["top"].split_row(
             Layout(name="left", ratio=4),
@@ -70,7 +70,7 @@ class Manager:
 
     def __init__(self, logger, queue, thread_class):
         self.logger = logger
-        self.rtm_logger = logging.getLogger("rtm")
+        self.rtm_logger = logging.getLogger("rtmui")
         self.rtm_logger.setLevel(logging.DEBUG)
         self.buffering_handler = PopBufferingHandler(capacity=2000)
         self.rtm_logger.addHandler(self.buffering_handler)

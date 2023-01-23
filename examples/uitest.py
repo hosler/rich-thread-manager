@@ -1,8 +1,8 @@
 import time, logging, queue, threading
 from queue import Empty
 
-from rtm.threading import RTMThread
-from rtm.manager import Manager
+from rtmui.threading import RTMThread
+from rtmui.manager import Manager
 # Set up the main/root logger
 main_logger = logging.getLogger()
 main_logger.setLevel(logging.DEBUG)
