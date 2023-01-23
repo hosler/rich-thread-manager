@@ -6,7 +6,8 @@ from rtm.manager import Manager
 # Set up the main/root logger
 main_logger = logging.getLogger()
 main_logger.setLevel(logging.DEBUG)
-
+# handler = logging.StreamHandler()
+# main_logger.addHandler(handler)
 class DumbThread(RTMThread):
     def run(self):
         while True:
@@ -24,7 +25,7 @@ class DumbThread(RTMThread):
 
 queue = queue.Queue()
 
-for counter in range(400):
+for counter in range(1):
     queue.put(counter)
 
 manager = Manager(main_logger, queue, DumbThread)
