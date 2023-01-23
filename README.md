@@ -23,8 +23,10 @@ from queue import Empty
 
 from rtmui.threading import RTMThread
 from rtmui.manager import Manager
+
 main_logger = logging.getLogger()
 main_logger.setLevel(logging.DEBUG)
+
 class DumbThread(RTMThread):
     def run(self):
         while True:
@@ -55,3 +57,6 @@ I sugguest running python with an unbuffered stdout to avoid write blocks:
 ```text
 python -u uitest.py
 ```
+
+## Screenshots
+![img.png](img.png)

@@ -3,11 +3,11 @@ from queue import Empty
 
 from rtmui.threading import RTMThread
 from rtmui.manager import Manager
+
 # Set up the main/root logger
 main_logger = logging.getLogger()
 main_logger.setLevel(logging.DEBUG)
-# handler = logging.StreamHandler()
-# main_logger.addHandler(handler)
+
 class DumbThread(RTMThread):
     def run(self):
         while True:
@@ -25,7 +25,7 @@ class DumbThread(RTMThread):
 
 queue = queue.Queue()
 
-for counter in range(1):
+for counter in range(40):
     queue.put(counter)
 
 manager = Manager(main_logger, queue, DumbThread)
