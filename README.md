@@ -51,12 +51,5 @@ manager = Manager(main_logger, queue, DumbThread)
 manager.run()
 ```
 
-## Notes
-I sugguest running python with an unbuffered stdout to avoid write blocks:
-
-```text
-python -u uitest.py
-```
-
 ## Screenshots
 ![img.png](img.png)
