@@ -5,7 +5,7 @@ from rich.live import Live
 from rich.table import Table
 from rich.progress import Progress
 
-from sshkeyboard import listen_keyboard
+from readchar import readkey, key
 
 import time, logging, queue, threading
 from queue import Empty
@@ -31,12 +31,16 @@ class ThreadManager(threading.Thread):
         self.logger.info("Manager started")
 
     def run(self):
-        try:
-            listen_keyboard(
-                on_press=self.press,
-            )
-        except Exception as e:
-            self.logger.info(str(e))
+        while True:
+            k = readkey()
+            if k == "=":
+                ft = self.thread_class(len(self.threads) + 1, self.logger, self.queue)
+                ft.start()
+                self.threads.append(ft)
+            if k == "-":
+                ft = self.threads.pop()
+                ft.kill()
+            time.sleep(.5)
 
 
 class Manager:
