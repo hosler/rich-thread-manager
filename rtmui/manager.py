@@ -13,14 +13,6 @@ from queue import Empty
 from rtmui.loghandlers import PopBufferingHandler
 
 class ThreadManager(threading.Thread):
-    def press(self, key):
-        if key == "=":
-            ft = self.thread_class(len(self.threads)+1, self.logger, self.queue)
-            ft.start()
-            self.threads.append(ft)
-        if key == "-":
-            ft = self.threads.pop()
-            ft.kill()
 
     def __init__(self, logger, threads, queue, thread_class):
         threading.Thread.__init__(self, daemon=True)
@@ -34,12 +26,23 @@ class ThreadManager(threading.Thread):
         while True:
             k = readkey()
             if k == "=":
-                ft = self.thread_class(len(self.threads) + 1, self.logger, self.queue)
-                ft.start()
-                self.threads.append(ft)
+                try:
+                    ft = self.thread_class(len(self.threads) + 1, self.logger, self.queue)
+                    ft.start()
+                    self.threads.append(ft)
+                except Exception as e:
+                    self.logger.info(str(e))
             if k == "-":
                 ft = self.threads.pop()
                 ft.kill()
+            if k == "q":
+                while len(self.threads) > 0:
+                    ft = self.threads.pop()
+                    ft.kill()
+                for thread in self.threads: # TODO: this part is dumb. there wont be any threads in the list
+                    thread.join()
+                break
+
             time.sleep(.5)
 
 
@@ -72,12 +75,15 @@ class Manager:
             )
         return table
 
-    def __init__(self, logger, queue, thread_class):
+    def __init__(self, logger, queue, thread_class, handlers=None):
         self.logger = logger
         self.rtm_logger = logging.getLogger("rtmui")
         self.rtm_logger.setLevel(logging.DEBUG)
         self.buffering_handler = PopBufferingHandler(capacity=2000)
         self.rtm_logger.addHandler(self.buffering_handler)
+        if handlers is not None:
+            for handler in handlers:
+                self.rtm_logger.addHandler(handler)
         self.queue = queue
         self.console = Console()
         self.threads = []
@@ -100,7 +106,7 @@ class Manager:
         task = progress.add_task("All Jobs", total=int(total))
 
         with Live(layout, refresh_per_second=4, console=self.console, screen=True) as live:
-            while not self.queue.empty() or any(thread.is_alive() for thread in self.threads):
+            while thread_manager.is_alive():
                 render_map = layout.render(live.console, live.console.options)
                 layout["top"]["left"].update(Panel(self.get_log(render_map[layout["top"]["left"]].region.height)))
                 layout["top"]["right"].update(Panel(self.generate_table()))
@@ -108,5 +114,4 @@ class Manager:
                 time.sleep(1)
 
 
-        for thread in self.threads:
-            thread.join()
+        thread_manager.join()
